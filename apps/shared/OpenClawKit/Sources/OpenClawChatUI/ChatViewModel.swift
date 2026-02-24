@@ -432,8 +432,8 @@ public final class OpenClawChatViewModel {
             Task { await self.pollHealthIfNeeded(force: false) }
         case let .chat(chat):
             self.handleChatEvent(chat)
-        case let .agent(agent):
-            self.handleAgentEvent(agent)
+        case let .ai(agent):
+            self.handleAiEvent(agent)
         case .seqGap:
             self.errorText = "Event stream interrupted; try refreshing."
             self.clearPendingRuns(reason: nil)
@@ -481,7 +481,7 @@ public final class OpenClawChatViewModel {
         }
     }
 
-    private func handleAgentEvent(_ evt: OpenClawAgentEventPayload) {
+    private func handleAiEvent(_ evt: OpenClawAiEventPayload) {
         if let sessionId, evt.runId != sessionId {
             return
         }

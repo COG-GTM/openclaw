@@ -3,13 +3,13 @@ import Observation
 
 @MainActor
 @Observable
-final class AgentEventStore {
-    static let shared = AgentEventStore()
+final class AiEventStore {
+    static let shared = AiEventStore()
 
-    private(set) var events: [ControlAgentEvent] = []
+    private(set) var events: [ControlAiEvent] = []
     private let maxEvents = 400
 
-    func append(_ event: ControlAgentEvent) {
+    func append(_ event: ControlAiEvent) {
         self.events.append(event)
         if self.events.count > self.maxEvents {
             self.events.removeFirst(self.events.count - self.maxEvents)

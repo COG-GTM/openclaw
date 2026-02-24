@@ -6,7 +6,7 @@ import {
   refreshActiveTab,
   setLastActiveSessionKey,
 } from "./app-settings.ts";
-import { handleAgentEvent, resetToolStream, type AgentEventPayload } from "./app-tool-stream.ts";
+import { handleAiEvent, resetToolStream, type AiEventPayload } from "./app-tool-stream.ts";
 import type { OpenClawApp } from "./app.ts";
 import { loadAgents } from "./controllers/agents.ts";
 import { loadAssistantIdentity } from "./controllers/assistant-identity.ts";
@@ -194,13 +194,13 @@ function handleGatewayEventUnsafe(host: GatewayHost, evt: GatewayEventFrame) {
     host.eventLog = host.eventLogBuffer;
   }
 
-  if (evt.event === "agent") {
+  if (evt.event === "ai") {
     if (host.onboarding) {
       return;
     }
-    handleAgentEvent(
-      host as unknown as Parameters<typeof handleAgentEvent>[0],
-      evt.payload as AgentEventPayload | undefined,
+    handleAiEvent(
+      host as unknown as Parameters<typeof handleAiEvent>[0],
+      evt.payload as AiEventPayload | undefined,
     );
     return;
   }

@@ -46,17 +46,17 @@ struct LowCoverageViewSmokeTests {
     }
 
     @Test func agentEventsWindowBuildsBodyWithEvent() {
-        AgentEventStore.shared.clear()
-        let sample = ControlAgentEvent(
+        AiEventStore.shared.clear()
+        let sample = ControlAiEvent(
             runId: "run-1",
             seq: 1,
             stream: "tool",
             ts: Date().timeIntervalSince1970 * 1000,
             data: ["phase": AnyCodable("start"), "name": AnyCodable("test")],
             summary: nil)
-        AgentEventStore.shared.append(sample)
-        _ = AgentEventsWindow().body
-        AgentEventStore.shared.clear()
+        AiEventStore.shared.append(sample)
+        _ = AiEventsWindow().body
+        AiEventStore.shared.clear()
     }
 
     @Test func notifyOverlayPresentsAndDismisses() async {

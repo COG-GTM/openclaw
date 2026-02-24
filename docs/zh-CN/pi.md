@@ -213,7 +213,7 @@ const subscription = subscribeEmbeddedPiSession({
   onReasoningStream: params.onReasoningStream,
   onBlockReply: params.onBlockReply,
   onPartialReply: params.onPartialReply,
-  onAgentEvent: params.onAgentEvent,
+  onAiEvent: params.onAiEvent,
 });
 ```
 

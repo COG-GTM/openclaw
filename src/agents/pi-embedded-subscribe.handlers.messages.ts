@@ -1,7 +1,7 @@
 import type { AgentEvent, AgentMessage } from "@mariozechner/pi-agent-core";
 import { parseReplyDirectives } from "../auto-reply/reply/reply-directives.js";
 import { SILENT_REPLY_TOKEN } from "../auto-reply/tokens.js";
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import { createInlineCodeState } from "../markdown/code-spans.js";
 import {
   isMessagingToolDuplicateNormalized,
@@ -169,7 +169,7 @@ export function handleMessageUpdate(
     ctx.state.lastStreamedAssistantCleaned = cleanedText;
 
     if (shouldEmit) {
-      emitAgentEvent({
+      emitAiEvent({
         runId: ctx.params.runId,
         stream: "assistant",
         data: {
@@ -178,7 +178,7 @@ export function handleMessageUpdate(
           mediaUrls: hasMedia ? mediaUrls : undefined,
         },
       });
-      void ctx.params.onAgentEvent?.({
+      void ctx.params.onAiEvent?.({
         stream: "assistant",
         data: {
           text: cleanedText,
@@ -263,7 +263,7 @@ export function handleMessageEnd(
   }
 
   if (!ctx.state.emittedAssistantUpdate && (cleanedText || hasMedia)) {
-    emitAgentEvent({
+    emitAiEvent({
       runId: ctx.params.runId,
       stream: "assistant",
       data: {
@@ -272,7 +272,7 @@ export function handleMessageEnd(
         mediaUrls: hasMedia ? mediaUrls : undefined,
       },
     });
-    void ctx.params.onAgentEvent?.({
+    void ctx.params.onAiEvent?.({
       stream: "assistant",
       data: {
         text: cleanedText,

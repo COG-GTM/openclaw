@@ -169,8 +169,8 @@ extension TestChatTransportState {
         try await waitUntil("pending run starts") { await MainActor.run { vm.pendingRunCount == 1 } }
 
         transport.emit(
-            .agent(
-                OpenClawAgentEventPayload(
+            .ai(
+                OpenClawAiEventPayload(
                     runId: sessionId,
                     seq: 1,
                     stream: "assistant",
@@ -182,8 +182,8 @@ extension TestChatTransportState {
         }
 
         transport.emit(
-            .agent(
-                OpenClawAgentEventPayload(
+            .ai(
+                OpenClawAiEventPayload(
                     runId: sessionId,
                     seq: 2,
                     stream: "tool",
@@ -326,8 +326,8 @@ extension TestChatTransportState {
         try await waitUntil("bootstrap") { await MainActor.run { vm.healthOK && vm.sessionId == sessionId } }
 
         transport.emit(
-            .agent(
-                OpenClawAgentEventPayload(
+            .ai(
+                OpenClawAiEventPayload(
                     runId: sessionId,
                     seq: 1,
                     stream: "assistant",
@@ -335,8 +335,8 @@ extension TestChatTransportState {
                     data: ["text": AnyCodable("external stream")])))
 
         transport.emit(
-            .agent(
-                OpenClawAgentEventPayload(
+            .ai(
+                OpenClawAiEventPayload(
                     runId: sessionId,
                     seq: 2,
                     stream: "tool",
@@ -531,8 +531,8 @@ extension TestChatTransportState {
         try await waitUntil("bootstrap") { await MainActor.run { vm.healthOK && vm.sessionId == sessionId } }
 
         transport.emit(
-            .agent(
-                OpenClawAgentEventPayload(
+            .ai(
+                OpenClawAiEventPayload(
                     runId: sessionId,
                     seq: 1,
                     stream: "assistant",

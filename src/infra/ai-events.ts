@@ -1,17 +1,17 @@
 import type { VerboseLevel } from "../auto-reply/thinking.js";
 
-export type AgentEventStream = "lifecycle" | "tool" | "assistant" | "error" | (string & {});
+export type AiEventStream = "lifecycle" | "tool" | "assistant" | "error" | (string & {});
 
-export type AgentEventPayload = {
+export type AiEventPayload = {
   runId: string;
   seq: number;
-  stream: AgentEventStream;
+  stream: AiEventStream;
   ts: number;
   data: Record<string, unknown>;
   sessionKey?: string;
 };
 
-export type AgentRunContext = {
+export type AiRunContext = {
   sessionKey?: string;
   verboseLevel?: VerboseLevel;
   isHeartbeat?: boolean;
@@ -19,10 +19,10 @@ export type AgentRunContext = {
 
 // Keep per-run counters so streams stay strictly monotonic per runId.
 const seqByRun = new Map<string, number>();
-const listeners = new Set<(evt: AgentEventPayload) => void>();
-const runContextById = new Map<string, AgentRunContext>();
+const listeners = new Set<(evt: AiEventPayload) => void>();
+const runContextById = new Map<string, AiRunContext>();
 
-export function registerAgentRunContext(runId: string, context: AgentRunContext) {
+export function registerAiRunContext(runId: string, context: AiRunContext) {
   if (!runId) {
     return;
   }
@@ -42,19 +42,19 @@ export function registerAgentRunContext(runId: string, context: AgentRunContext)
   }
 }
 
-export function getAgentRunContext(runId: string) {
+export function getAiRunContext(runId: string) {
   return runContextById.get(runId);
 }
 
-export function clearAgentRunContext(runId: string) {
+export function clearAiRunContext(runId: string) {
   runContextById.delete(runId);
 }
 
-export function resetAgentRunContextForTest() {
+export function resetAiRunContextForTest() {
   runContextById.clear();
 }
 
-export function emitAgentEvent(event: Omit<AgentEventPayload, "seq" | "ts">) {
+export function emitAiEvent(event: Omit<AiEventPayload, "seq" | "ts">) {
   const nextSeq = (seqByRun.get(event.runId) ?? 0) + 1;
   seqByRun.set(event.runId, nextSeq);
   const context = runContextById.get(event.runId);
@@ -62,7 +62,7 @@ export function emitAgentEvent(event: Omit<AgentEventPayload, "seq" | "ts">) {
     typeof event.sessionKey === "string" && event.sessionKey.trim()
       ? event.sessionKey
       : context?.sessionKey;
-  const enriched: AgentEventPayload = {
+  const enriched: AiEventPayload = {
     ...event,
     sessionKey,
     seq: nextSeq,
@@ -77,7 +77,7 @@ export function emitAgentEvent(event: Omit<AgentEventPayload, "seq" | "ts">) {
   }
 }
 
-export function onAgentEvent(listener: (evt: AgentEventPayload) => void) {
+export function onAiEvent(listener: (evt: AiEventPayload) => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }

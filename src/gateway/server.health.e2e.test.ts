@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import { emitHeartbeatEvent } from "../infra/heartbeat-events.js";
 import { GATEWAY_CLIENT_MODES, GATEWAY_CLIENT_NAMES } from "../utils/message-channel.js";
 import { startGatewayServerHarness, type GatewayServerHarness } from "./server.e2e-ws-harness.js";
@@ -154,11 +154,11 @@ describe("gateway server health/presence", () => {
       ws,
       (o) =>
         o.type === "event" &&
-        o.event === "agent" &&
+        o.event === "ai" &&
         o.payload?.runId === runId &&
         o.payload?.stream === "lifecycle",
     );
-    emitAgentEvent({ runId, stream: "lifecycle", data: { msg: "hi" } });
+    emitAiEvent({ runId, stream: "lifecycle", data: { msg: "hi" } });
     const evt = await evtPromise;
     const payload = evt.payload as Record<string, unknown> | undefined;
     expect(payload?.runId).toBe(runId);

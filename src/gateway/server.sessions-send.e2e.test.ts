@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { afterAll, beforeAll, describe, expect, it, type Mock } from "vitest";
 import { resolveSessionTranscriptPath } from "../config/sessions.js";
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import { captureEnv } from "../test-utils/env.js";
 import {
   agentCommand,
@@ -50,7 +50,7 @@ describe("sessions_send gateway loopback", () => {
       await fs.mkdir(path.dirname(sessionFile), { recursive: true });
 
       const startedAt = Date.now();
-      emitAgentEvent({
+      emitAiEvent({
         runId,
         stream: "lifecycle",
         data: { phase: "start", startedAt },
@@ -69,7 +69,7 @@ describe("sessions_send gateway loopback", () => {
       };
       await fs.appendFile(sessionFile, `${JSON.stringify({ message })}\n`, "utf8");
 
-      emitAgentEvent({
+      emitAiEvent({
         runId,
         stream: "lifecycle",
         data: {
@@ -137,7 +137,7 @@ describe("sessions_send label lookup", () => {
       await fs.mkdir(path.dirname(sessionFile), { recursive: true });
 
       const startedAt = Date.now();
-      emitAgentEvent({
+      emitAiEvent({
         runId,
         stream: "lifecycle",
         data: { phase: "start", startedAt },
@@ -150,7 +150,7 @@ describe("sessions_send label lookup", () => {
       };
       await fs.appendFile(sessionFile, `${JSON.stringify({ message })}\n`, "utf8");
 
-      emitAgentEvent({
+      emitAiEvent({
         runId,
         stream: "lifecycle",
         data: { phase: "end", startedAt, endedAt: Date.now() },

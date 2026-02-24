@@ -18,7 +18,7 @@ import { loadModelCatalog } from "../agents/model-catalog.js";
 import { runEmbeddedPiAgent } from "../agents/pi-embedded.js";
 import type { OpenClawConfig } from "../config/config.js";
 import * as configModule from "../config/config.js";
-import { emitAgentEvent, onAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent, onAiEvent } from "../infra/ai-events.js";
 import { setActivePluginRegistry } from "../plugins/runtime.js";
 import { createPluginRuntime } from "../plugins/runtime/index.js";
 import type { RuntimeEnv } from "../runtime.js";
@@ -146,7 +146,7 @@ describe("agentCommand", () => {
       mockConfig(home, store);
 
       const assistantEvents: Array<{ runId: string; text?: string }> = [];
-      const stop = onAgentEvent((evt) => {
+      const stop = onAiEvent((evt) => {
         if (evt.stream !== "assistant") {
           return;
         }
@@ -161,10 +161,10 @@ describe("agentCommand", () => {
         const data = { text: "hello", delta: "hello" };
         (
           params as {
-            onAgentEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
+            onAiEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
           }
-        ).onAgentEvent?.({ stream: "assistant", data });
-        emitAgentEvent({ runId, stream: "assistant", data });
+        ).onAiEvent?.({ stream: "assistant", data });
+        emitAiEvent({ runId, stream: "assistant", data });
         return {
           payloads: [{ text: "hello" }],
           meta: { agentMeta: { provider: "p", model: "m" } },

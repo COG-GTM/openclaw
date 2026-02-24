@@ -1,7 +1,7 @@
 import { normalizeVerboseLevel } from "../auto-reply/thinking.js";
 import { isSilentReplyText, SILENT_REPLY_TOKEN } from "../auto-reply/tokens.js";
 import { loadConfig } from "../config/config.js";
-import { type AgentEventPayload, getAgentRunContext } from "../infra/agent-events.js";
+import { type AiEventPayload, getAiRunContext } from "../infra/ai-events.js";
 import { resolveHeartbeatVisibility } from "../infra/heartbeat-visibility.js";
 import { loadSessionEntry } from "./session-utils.js";
 import { formatForLog } from "./ws-log.js";
@@ -11,7 +11,7 @@ import { formatForLog } from "./ws-log.js";
  * Returns true if the run is a heartbeat and showOk is false.
  */
 function shouldSuppressHeartbeatBroadcast(runId: string): boolean {
-  const runContext = getAgentRunContext(runId);
+  const runContext = getAiRunContext(runId);
   if (!runContext?.isHeartbeat) {
     return false;
   }
@@ -202,7 +202,7 @@ export type ChatEventBroadcast = (
 
 export type NodeSendToSession = (sessionKey: string, event: string, payload: unknown) => void;
 
-export type AgentEventHandlerOptions = {
+export type AiEventHandlerOptions = {
   broadcast: ChatEventBroadcast;
   broadcastToConnIds: (
     event: string,
@@ -214,20 +214,20 @@ export type AgentEventHandlerOptions = {
   agentRunSeq: Map<string, number>;
   chatRunState: ChatRunState;
   resolveSessionKeyForRun: (runId: string) => string | undefined;
-  clearAgentRunContext: (runId: string) => void;
+  clearAiRunContext: (runId: string) => void;
   toolEventRecipients: ToolEventRecipientRegistry;
 };
 
-export function createAgentEventHandler({
+export function createAiEventHandler({
   broadcast,
   broadcastToConnIds,
   nodeSendToSession,
   agentRunSeq,
   chatRunState,
   resolveSessionKeyForRun,
-  clearAgentRunContext,
+  clearAiRunContext,
   toolEventRecipients,
-}: AgentEventHandlerOptions) {
+}: AiEventHandlerOptions) {
   const emitChatDelta = (sessionKey: string, clientRunId: string, seq: number, text: string) => {
     if (isSilentReplyText(text, SILENT_REPLY_TOKEN)) {
       return;
@@ -302,7 +302,7 @@ export function createAgentEventHandler({
   };
 
   const resolveToolVerboseLevel = (runId: string, sessionKey?: string) => {
-    const runContext = getAgentRunContext(runId);
+    const runContext = getAiRunContext(runId);
     const runVerbose = normalizeVerboseLevel(runContext?.verboseLevel);
     if (runVerbose) {
       return runVerbose;
@@ -323,7 +323,7 @@ export function createAgentEventHandler({
     }
   };
 
-  return (evt: AgentEventPayload) => {
+  return (evt: AiEventPayload) => {
     const chatLink = chatRunState.registry.peek(evt.runId);
     const sessionKey = chatLink?.sessionKey ?? resolveSessionKeyForRun(evt.runId);
     const clientRunId = chatLink?.clientRunId ?? evt.runId;
@@ -345,7 +345,7 @@ export function createAgentEventHandler({
           })()
         : agentPayload;
     if (evt.seq !== last + 1) {
-      broadcast("agent", {
+      broadcast("ai", {
         runId: evt.runId,
         stream: "error",
         ts: Date.now(),
@@ -365,10 +365,10 @@ export function createAgentEventHandler({
       // messages to messaging surfaces (Telegram, Discord, etc.).
       const recipients = toolEventRecipients.get(evt.runId);
       if (recipients && recipients.size > 0) {
-        broadcastToConnIds("agent", toolPayload, recipients);
+        broadcastToConnIds("ai", toolPayload, recipients);
       }
     } else {
-      broadcast("agent", agentPayload);
+      broadcast("ai", agentPayload);
     }
 
     const lifecyclePhase =
@@ -378,7 +378,7 @@ export function createAgentEventHandler({
       // Send tool events to node/channel subscribers only when verbose is enabled;
       // WS clients already received the event above via broadcastToConnIds.
       if (!isToolEvent || toolVerbose !== "off") {
-        nodeSendToSession(sessionKey, "agent", isToolEvent ? toolPayload : agentPayload);
+        nodeSendToSession(sessionKey, "ai", isToolEvent ? toolPayload : agentPayload);
       }
       if (!isAborted && evt.stream === "assistant" && typeof evt.data?.text === "string") {
         emitChatDelta(sessionKey, clientRunId, evt.seq, evt.data.text);
@@ -386,7 +386,7 @@ export function createAgentEventHandler({
         if (chatLink) {
           const finished = chatRunState.registry.shift(evt.runId);
           if (!finished) {
-            clearAgentRunContext(evt.runId);
+            clearAiRunContext(evt.runId);
             return;
           }
           emitChatFinal(
@@ -418,7 +418,7 @@ export function createAgentEventHandler({
 
     if (lifecyclePhase === "end" || lifecyclePhase === "error") {
       toolEventRecipients.markFinal(evt.runId);
-      clearAgentRunContext(evt.runId);
+      clearAiRunContext(evt.runId);
       agentRunSeq.delete(evt.runId);
       agentRunSeq.delete(clientRunId);
     }

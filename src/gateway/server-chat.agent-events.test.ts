@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
-import { registerAgentRunContext, resetAgentRunContextForTest } from "../infra/agent-events.js";
+import { registerAiRunContext, resetAiRunContextForTest } from "../infra/ai-events.js";
 import {
-  createAgentEventHandler,
+  createAiEventHandler,
   createChatRunState,
   createToolEventRecipientRegistry,
 } from "./server-chat.js";
@@ -20,14 +20,14 @@ describe("agent event handler", () => {
     const chatRunState = createChatRunState();
     const toolEventRecipients = createToolEventRecipientRegistry();
 
-    const handler = createAgentEventHandler({
+    const handler = createAiEventHandler({
       broadcast,
       broadcastToConnIds,
       nodeSendToSession,
       agentRunSeq,
       chatRunState,
       resolveSessionKeyForRun: params?.resolveSessionKeyForRun ?? (() => undefined),
-      clearAgentRunContext: vi.fn(),
+      clearAiRunContext: vi.fn(),
       toolEventRecipients,
     });
 
@@ -156,7 +156,7 @@ describe("agent event handler", () => {
       resolveSessionKeyForRun: () => "session-1",
     });
 
-    registerAgentRunContext("run-tool", { sessionKey: "session-1", verboseLevel: "on" });
+    registerAiRunContext("run-tool", { sessionKey: "session-1", verboseLevel: "on" });
     toolEventRecipients.add("run-tool", "conn-1");
 
     handler({
@@ -169,7 +169,7 @@ describe("agent event handler", () => {
 
     expect(broadcast).not.toHaveBeenCalled();
     expect(broadcastToConnIds).toHaveBeenCalledTimes(1);
-    resetAgentRunContextForTest();
+    resetAiRunContextForTest();
   });
 
   it("broadcasts tool events to WS recipients even when verbose is off, but skips node send", () => {
@@ -177,7 +177,7 @@ describe("agent event handler", () => {
       resolveSessionKeyForRun: () => "session-1",
     });
 
-    registerAgentRunContext("run-tool-off", { sessionKey: "session-1", verboseLevel: "off" });
+    registerAiRunContext("run-tool-off", { sessionKey: "session-1", verboseLevel: "off" });
     toolEventRecipients.add("run-tool-off", "conn-1");
 
     handler({
@@ -191,9 +191,9 @@ describe("agent event handler", () => {
     // Tool events always broadcast to registered WS recipients
     expect(broadcastToConnIds).toHaveBeenCalledTimes(1);
     // But node/channel subscribers should NOT receive when verbose is off
-    const nodeToolCalls = nodeSendToSession.mock.calls.filter(([, event]) => event === "agent");
+    const nodeToolCalls = nodeSendToSession.mock.calls.filter(([, event]) => event === "ai");
     expect(nodeToolCalls).toHaveLength(0);
-    resetAgentRunContextForTest();
+    resetAiRunContextForTest();
   });
 
   it("strips tool output when verbose is on", () => {
@@ -201,7 +201,7 @@ describe("agent event handler", () => {
       resolveSessionKeyForRun: () => "session-1",
     });
 
-    registerAgentRunContext("run-tool-on", { sessionKey: "session-1", verboseLevel: "on" });
+    registerAiRunContext("run-tool-on", { sessionKey: "session-1", verboseLevel: "on" });
     toolEventRecipients.add("run-tool-on", "conn-1");
 
     handler({
@@ -222,7 +222,7 @@ describe("agent event handler", () => {
     const payload = broadcastToConnIds.mock.calls[0]?.[1] as { data?: Record<string, unknown> };
     expect(payload.data?.result).toBeUndefined();
     expect(payload.data?.partialResult).toBeUndefined();
-    resetAgentRunContextForTest();
+    resetAiRunContextForTest();
   });
 
   it("keeps tool output when verbose is full", () => {
@@ -230,7 +230,7 @@ describe("agent event handler", () => {
       resolveSessionKeyForRun: () => "session-1",
     });
 
-    registerAgentRunContext("run-tool-full", { sessionKey: "session-1", verboseLevel: "full" });
+    registerAiRunContext("run-tool-full", { sessionKey: "session-1", verboseLevel: "full" });
     toolEventRecipients.add("run-tool-full", "conn-1");
 
     const result = { content: [{ type: "text", text: "secret" }] };
@@ -250,6 +250,6 @@ describe("agent event handler", () => {
     expect(broadcastToConnIds).toHaveBeenCalledTimes(1);
     const payload = broadcastToConnIds.mock.calls[0]?.[1] as { data?: Record<string, unknown> };
     expect(payload.data?.result).toEqual(result);
-    resetAgentRunContextForTest();
+    resetAiRunContextForTest();
   });
 });

@@ -14,7 +14,7 @@ struct ControlHeartbeatEvent: Codable {
     let reason: String?
 }
 
-struct ControlAgentEvent: Codable, Sendable, Identifiable {
+struct ControlAiEvent: Codable, Sendable, Identifiable {
     var id: String {
         "\(self.runId)-\(self.seq)"
     }
@@ -351,11 +351,11 @@ final class ControlChannel {
 
     private func handle(push: GatewayPush) {
         switch push {
-        case let .event(evt) where evt.event == "agent":
+        case let .event(evt) where evt.event == "ai":
             if let payload = evt.payload,
-               let agent = try? GatewayPayloadDecoding.decode(payload, as: ControlAgentEvent.self)
+               let agent = try? GatewayPayloadDecoding.decode(payload, as: ControlAiEvent.self)
             {
-                AgentEventStore.shared.append(agent)
+                AiEventStore.shared.append(agent)
                 self.routeWorkActivity(from: agent)
             }
         case let .event(evt) where evt.event == "heartbeat":
@@ -374,7 +374,7 @@ final class ControlChannel {
         }
     }
 
-    private func routeWorkActivity(from event: ControlAgentEvent) {
+    private func routeWorkActivity(from event: ControlAiEvent) {
         // We currently treat VoiceWake as the "main" session for UI purposes.
         // In the future, the gateway can include a sessionKey to distinguish runs.
         let sessionKey = (event.data["sessionKey"]?.value as? String) ?? "main"
@@ -424,5 +424,5 @@ final class ControlChannel {
 
 extension Notification.Name {
     static let controlHeartbeat = Notification.Name("openclaw.control.heartbeat")
-    static let controlAgentEvent = Notification.Name("openclaw.control.agent")
+    static let controlAiEvent = Notification.Name("openclaw.control.ai")
 }

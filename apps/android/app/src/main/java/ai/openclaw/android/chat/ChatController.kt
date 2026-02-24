@@ -242,9 +242,9 @@ class ChatController(
         if (payloadJson.isNullOrBlank()) return
         handleChatEvent(payloadJson)
       }
-      "agent" -> {
+      "ai" -> {
         if (payloadJson.isNullOrBlank()) return
-        handleAgentEvent(payloadJson)
+        handleAiEvent(payloadJson)
       }
     }
   }
@@ -349,7 +349,7 @@ class ChatController(
     }
   }
 
-  private fun handleAgentEvent(payloadJson: String) {
+  private fun handleAiEvent(payloadJson: String) {
     val payload = json.parseToJsonElement(payloadJson).asObjectOrNull() ?: return
     val runId = payload["runId"].asStringOrNull()
     val sessionId = _sessionId.value

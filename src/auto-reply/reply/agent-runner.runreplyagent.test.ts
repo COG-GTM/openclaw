@@ -16,13 +16,13 @@ type AgentRunParams = {
   onReasoningStream?: (payload: { text?: string }) => Promise<void> | void;
   onBlockReply?: (payload: { text?: string; mediaUrls?: string[] }) => Promise<void> | void;
   onToolResult?: (payload: { text?: string; mediaUrls?: string[] }) => Promise<void> | void;
-  onAgentEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
+  onAiEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
 };
 
 type EmbeddedRunParams = {
   prompt?: string;
   extraSystemPrompt?: string;
-  onAgentEvent?: (evt: { stream?: string; data?: { phase?: string; willRetry?: boolean } }) => void;
+  onAiEvent?: (evt: { stream?: string; data?: { phase?: string; willRetry?: boolean } }) => void;
 };
 
 const state = vi.hoisted(() => ({
@@ -494,7 +494,7 @@ describe("runReplyAgent typing (heartbeat)", () => {
       const sessionStore = { main: sessionEntry };
 
       state.runEmbeddedPiAgentMock.mockImplementationOnce(async (params: AgentRunParams) => {
-        params.onAgentEvent?.({
+        params.onAiEvent?.({
           stream: "compaction",
           data: { phase: "end", willRetry: false },
         });
@@ -1008,7 +1008,7 @@ describe("runReplyAgent memory flush", () => {
 
       state.runEmbeddedPiAgentMock.mockImplementation(async (params: EmbeddedRunParams) => {
         if (params.prompt?.includes("Pre-compaction memory flush.")) {
-          params.onAgentEvent?.({
+          params.onAiEvent?.({
             stream: "compaction",
             data: { phase: "end", willRetry: false },
           });

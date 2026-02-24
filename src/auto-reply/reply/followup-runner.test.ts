@@ -77,9 +77,9 @@ describe("createFollowupRunner compaction", () => {
 
     runEmbeddedPiAgentMock.mockImplementationOnce(
       async (params: {
-        onAgentEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
+        onAiEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
       }) => {
-        params.onAgentEvent?.({
+        params.onAiEvent?.({
           stream: "compaction",
           data: { phase: "end", willRetry: true },
         });
@@ -151,9 +151,9 @@ describe("createFollowupRunner compaction", () => {
 
     runEmbeddedPiAgentMock.mockImplementationOnce(
       async (params: {
-        onAgentEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
+        onAiEvent?: (evt: { stream: string; data: Record<string, unknown> }) => void;
       }) => {
-        params.onAgentEvent?.({
+        params.onAiEvent?.({
           stream: "compaction",
           data: { phase: "end", willRetry: false },
         });

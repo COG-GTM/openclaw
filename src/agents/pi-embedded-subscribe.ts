@@ -2,7 +2,7 @@ import type { AgentMessage } from "@mariozechner/pi-agent-core";
 import { parseReplyDirectives } from "../auto-reply/reply/reply-directives.js";
 import { createStreamingDirectiveAccumulator } from "../auto-reply/reply/streaming-directives.js";
 import { formatToolAggregate } from "../auto-reply/tool-meta.js";
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import { createSubsystemLogger } from "../logging/subsystem.js";
 import type { InlineCodeState } from "../markdown/code-spans.js";
 import { buildCodeSpanIndex, createInlineCodeState } from "../markdown/code-spans.js";
@@ -562,7 +562,7 @@ export function subscribeEmbeddedPiSession(params: SubscribeEmbeddedPiSessionPar
     state.lastStreamedReasoning = formatted;
 
     // Broadcast thinking event to WebSocket clients in real-time
-    emitAgentEvent({
+    emitAiEvent({
       runId: params.runId,
       stream: "thinking",
       data: {

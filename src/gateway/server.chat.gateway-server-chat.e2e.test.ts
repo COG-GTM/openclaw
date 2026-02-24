@@ -3,7 +3,7 @@ import os from "node:os";
 import path from "node:path";
 import { describe, expect, test, vi } from "vitest";
 import { WebSocket } from "ws";
-import { emitAgentEvent, registerAgentRunContext } from "../infra/agent-events.js";
+import { emitAiEvent, registerAiRunContext } from "../infra/ai-events.js";
 import { GATEWAY_CLIENT_MODES, GATEWAY_CLIENT_NAMES } from "../utils/message-channel.js";
 import {
   connectOk,
@@ -393,7 +393,7 @@ describe("gateway server chat", () => {
     });
 
     try {
-      registerAgentRunContext("run-tool-1", {
+      registerAiRunContext("run-tool-1", {
         sessionKey: "main",
         verboseLevel: "on",
       });
@@ -401,11 +401,11 @@ describe("gateway server chat", () => {
       {
         const agentEvtP = onceMessage(
           webchatWs,
-          (o) => o.type === "event" && o.event === "agent" && o.payload?.runId === "run-tool-1",
+          (o) => o.type === "event" && o.event === "ai" && o.payload?.runId === "run-tool-1",
           8000,
         );
 
-        emitAgentEvent({
+        emitAiEvent({
           runId: "run-tool-1",
           stream: "assistant",
           data: { text: "hello" },
@@ -424,7 +424,7 @@ describe("gateway server chat", () => {
         });
 
         setTimeout(() => {
-          emitAgentEvent({
+          emitAiEvent({
             runId: "run-wait-1",
             stream: "lifecycle",
             data: { phase: "end", startedAt: 200, endedAt: 210 },
@@ -438,7 +438,7 @@ describe("gateway server chat", () => {
       }
 
       {
-        emitAgentEvent({
+        emitAiEvent({
           runId: "run-wait-early",
           stream: "lifecycle",
           data: { phase: "end", startedAt: 50, endedAt: 55 },
@@ -469,7 +469,7 @@ describe("gateway server chat", () => {
         });
 
         setTimeout(() => {
-          emitAgentEvent({
+          emitAiEvent({
             runId: "run-wait-err",
             stream: "lifecycle",
             data: { phase: "error", error: "boom" },
@@ -488,14 +488,14 @@ describe("gateway server chat", () => {
           timeoutMs: 1000,
         });
 
-        emitAgentEvent({
+        emitAiEvent({
           runId: "run-wait-start",
           stream: "lifecycle",
           data: { phase: "start", startedAt: 123 },
         });
 
         setTimeout(() => {
-          emitAgentEvent({
+          emitAiEvent({
             runId: "run-wait-start",
             stream: "lifecycle",
             data: { phase: "end", endedAt: 456 },

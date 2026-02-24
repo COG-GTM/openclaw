@@ -5,7 +5,7 @@ import path from "node:path";
 import { afterAll, afterEach, beforeAll, beforeEach, expect, vi } from "vitest";
 import { WebSocket } from "ws";
 import { resolveMainSessionKeyFromConfig, type SessionEntry } from "../config/sessions.js";
-import { resetAgentRunContextForTest } from "../infra/agent-events.js";
+import { resetAiRunContextForTest } from "../infra/ai-events.js";
 import {
   loadOrCreateDeviceIdentity,
   publicKeyRawBase64UrlFromPem,
@@ -164,7 +164,7 @@ async function resetGatewayTestState(options: { uniqueConfigRoot: boolean }) {
   embeddedRunMock.waitCalls = [];
   embeddedRunMock.waitResults.clear();
   drainSystemEvents(resolveMainSessionKeyFromConfig());
-  resetAgentRunContextForTest();
+  resetAiRunContextForTest();
   const mod = await getServerModule();
   mod.__resetModelCatalogCacheForTest();
   piSdkMock.enabled = false;

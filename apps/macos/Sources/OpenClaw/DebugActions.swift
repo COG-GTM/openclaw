@@ -8,15 +8,15 @@ enum DebugActions {
     private static let onboardingSeenKey = "openclaw.onboardingSeen"
 
     @MainActor
-    static func openAgentEventsWindow() {
+    static func openAiEventsWindow() {
         let window = NSWindow(
             contentRect: NSRect(x: 0, y: 0, width: 620, height: 420),
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false)
-        window.title = "Agent Events"
+        window.title = "AI Events"
         window.isReleasedWhenClosed = false
-        window.contentView = NSHostingView(rootView: AgentEventsWindow())
+        window.contentView = NSHostingView(rootView: AiEventsWindow())
         window.center()
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)

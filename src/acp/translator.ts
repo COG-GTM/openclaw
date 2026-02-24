@@ -93,7 +93,7 @@ export class AcpGatewayAgent implements Agent {
       return;
     }
     if (evt.event === "agent") {
-      await this.handleAgentEvent(evt);
+      await this.handleAiEvent(evt);
     }
   }
 
@@ -294,7 +294,7 @@ export class AcpGatewayAgent implements Agent {
     }
   }
 
-  private async handleAgentEvent(evt: EventFrame): Promise<void> {
+  private async handleAiEvent(evt: EventFrame): Promise<void> {
     const payload = evt.payload as Record<string, unknown> | undefined;
     if (!payload) {
       return;

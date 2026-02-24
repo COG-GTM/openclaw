@@ -5,13 +5,13 @@ import Testing
 
 @Suite
 @MainActor
-struct AgentEventStoreTests {
+struct AiEventStoreTests {
     @Test
     func appendAndClear() {
-        let store = AgentEventStore()
+        let store = AiEventStore()
         #expect(store.events.isEmpty)
 
-        store.append(ControlAgentEvent(
+        store.append(ControlAiEvent(
             runId: "run",
             seq: 1,
             stream: "test",
@@ -26,9 +26,9 @@ struct AgentEventStoreTests {
 
     @Test
     func trimsToMaxEvents() {
-        let store = AgentEventStore()
+        let store = AiEventStore()
         for i in 1...401 {
-            store.append(ControlAgentEvent(
+            store.append(ControlAiEvent(
                 runId: "run",
                 seq: i,
                 stream: "test",

@@ -11,7 +11,7 @@ import {
   updateSessionStoreEntry,
 } from "../../config/sessions.js";
 import { logVerbose } from "../../globals.js";
-import { registerAgentRunContext } from "../../infra/agent-events.js";
+import { registerAiRunContext } from "../../infra/ai-events.js";
 import type { TemplateContext } from "../templating.js";
 import type { VerboseLevel } from "../thinking.js";
 import type { GetReplyOptions } from "../types.js";
@@ -89,7 +89,7 @@ export async function runMemoryFlushIfNeeded(params: {
   const activeSessionStore = params.sessionStore;
   const flushRunId = crypto.randomUUID();
   if (params.sessionKey) {
-    registerAgentRunContext(flushRunId, {
+    registerAiRunContext(flushRunId, {
       sessionKey: params.sessionKey,
       verboseLevel: params.resolvedVerboseLevel,
     });
@@ -144,7 +144,7 @@ export async function runMemoryFlushIfNeeded(params: {
           bashElevated: params.followupRun.run.bashElevated,
           timeoutMs: params.followupRun.run.timeoutMs,
           runId: flushRunId,
-          onAgentEvent: (evt) => {
+          onAiEvent: (evt) => {
             if (evt.stream === "compaction") {
               const phase = typeof evt.data.phase === "string" ? evt.data.phase : "";
               if (phase === "end") {

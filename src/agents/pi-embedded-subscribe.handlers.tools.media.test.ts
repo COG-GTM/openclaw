@@ -15,7 +15,7 @@ function createMockContext(overrides?: {
     params: {
       runId: "test-run",
       onToolResult,
-      onAgentEvent: vi.fn(),
+      onAiEvent: vi.fn(),
     },
     state: {
       toolMetaById: new Map(),

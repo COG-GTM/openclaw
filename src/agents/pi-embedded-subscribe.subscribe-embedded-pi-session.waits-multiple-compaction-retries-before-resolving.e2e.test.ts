@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { onAgentEvent } from "../infra/agent-events.js";
+import { onAiEvent } from "../infra/ai-events.js";
 import { createSubscribedSessionHarness } from "./pi-embedded-subscribe.e2e-harness.js";
 
 describe("subscribeEmbeddedPiSession", () => {
@@ -35,7 +35,7 @@ describe("subscribeEmbeddedPiSession", () => {
       runId: "run-compaction",
     });
     const events: Array<{ phase: string; willRetry?: boolean }> = [];
-    const stop = onAgentEvent((evt) => {
+    const stop = onAiEvent((evt) => {
       if (evt.runId !== "run-compaction") {
         return;
       }

@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { createDefaultDeps } from "../cli/deps.js";
 import { agentCommand } from "../commands/agent.js";
-import { emitAgentEvent, onAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent, onAiEvent } from "../infra/ai-events.js";
 import { logWarn } from "../logger.js";
 import { defaultRuntime } from "../runtime.js";
 import { resolveAssistantStreamDeltaText } from "./agent-event-assistant-text.js";
@@ -235,7 +235,7 @@ export async function handleOpenAiHttpRequest(
   let sawAssistantDelta = false;
   let closed = false;
 
-  const unsubscribe = onAgentEvent((evt) => {
+  const unsubscribe = onAiEvent((evt) => {
     if (evt.runId !== runId) {
       return;
     }
@@ -367,7 +367,7 @@ export async function handleOpenAiHttpRequest(
           },
         ],
       });
-      emitAgentEvent({
+      emitAiEvent({
         runId,
         stream: "lifecycle",
         data: { phase: "error" },

@@ -16,8 +16,8 @@ vi.mock("../plugins/hook-runner-global.js", () => ({
 }));
 
 // Mock agent events (used by handlers)
-vi.mock("../infra/agent-events.js", () => ({
-  emitAgentEvent: vi.fn(),
+vi.mock("../infra/ai-events.js", () => ({
+  emitAiEvent: vi.fn(),
 }));
 
 function createToolHandlerCtx(params: {

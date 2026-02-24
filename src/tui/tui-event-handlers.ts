@@ -1,6 +1,6 @@
 import { asString, extractTextFromMessage, isCommandMessage } from "./tui-formatters.js";
 import { TuiStreamAssembler } from "./tui-stream-assembler.js";
-import type { AgentEvent, ChatEvent, TuiStateAccess } from "./tui-types.js";
+import type { AiEvent, ChatEvent, TuiStateAccess } from "./tui-types.js";
 
 type EventHandlerChatLog = {
   startTool: (toolCallId: string, toolName: string, args: unknown) => void;
@@ -229,11 +229,11 @@ export function createEventHandlers(context: EventHandlerContext) {
     tui.requestRender();
   };
 
-  const handleAgentEvent = (payload: unknown) => {
+  const handleAiEvent = (payload: unknown) => {
     if (!payload || typeof payload !== "object") {
       return;
     }
-    const evt = payload as AgentEvent;
+    const evt = payload as AiEvent;
     syncSessionKey();
     // Agent events (tool streaming, lifecycle) are emitted per-run. Filter against the
     // active chat run id, not the session id. Tool results can arrive after the chat
@@ -296,5 +296,5 @@ export function createEventHandlers(context: EventHandlerContext) {
     }
   };
 
-  return { handleChatEvent, handleAgentEvent };
+  return { handleChatEvent, handleAiEvent };
 }
