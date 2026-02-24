@@ -116,15 +116,15 @@ struct MacGatewayChatTransport: OpenClawChatTransport, Sendable {
                     return nil
                 }
                 return .chat(chat)
-            case "agent":
+            case "ai":
                 guard let payload = evt.payload else { return nil }
                 guard let agent = try? JSONDecoder().decode(
-                    OpenClawAgentEventPayload.self,
+                    OpenClawAiEventPayload.self,
                     from: JSONEncoder().encode(payload))
                 else {
                     return nil
                 }
-                return .agent(agent)
+                return .ai(agent)
             default:
                 return nil
             }

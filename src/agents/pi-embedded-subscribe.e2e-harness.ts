@@ -63,7 +63,7 @@ export function createParagraphChunkedBlockReplyHarness(params: {
   return { emit, onBlockReply, subscription };
 }
 
-export function extractAgentEventPayloads(calls: Array<unknown[]>): Array<Record<string, unknown>> {
+export function extractAiEventPayloads(calls: Array<unknown[]>): Array<Record<string, unknown>> {
   return calls
     .map((call) => {
       const first = call?.[0] as { data?: unknown } | undefined;
@@ -123,8 +123,8 @@ export function expectFencedChunks(calls: Array<unknown[]>, expectedPrefix: stri
   }
 }
 
-export function expectSingleAgentEventText(calls: Array<unknown[]>, text: string): void {
-  const payloads = extractAgentEventPayloads(calls);
+export function expectSingleAiEventText(calls: Array<unknown[]>, text: string): void {
+  const payloads = extractAiEventPayloads(calls);
   expect(payloads).toHaveLength(1);
   expect(payloads[0]?.text).toBe(text);
   expect(payloads[0]?.delta).toBe(text);

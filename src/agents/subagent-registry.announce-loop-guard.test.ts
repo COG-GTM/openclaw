@@ -30,8 +30,8 @@ vi.mock("../gateway/call.js", () => ({
   callGateway: vi.fn().mockResolvedValue({ status: "ok" }),
 }));
 
-vi.mock("../infra/agent-events.js", () => ({
-  onAgentEvent: vi.fn().mockReturnValue(() => {}),
+vi.mock("../infra/ai-events.js", () => ({
+  onAiEvent: vi.fn().mockReturnValue(() => {}),
 }));
 
 vi.mock("./subagent-announce.js", () => ({

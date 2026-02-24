@@ -17,7 +17,7 @@ import {
   writeConfigFile,
 } from "../config/config.js";
 import { applyPluginAutoEnable } from "../config/plugin-auto-enable.js";
-import { clearAgentRunContext, onAgentEvent } from "../infra/agent-events.js";
+import { clearAiRunContext, onAiEvent } from "../infra/ai-events.js";
 import {
   ensureControlUiAssetsBuilt,
   resolveControlUiRootOverrideSync,
@@ -53,7 +53,7 @@ import { ExecApprovalManager } from "./exec-approval-manager.js";
 import { NodeRegistry } from "./node-registry.js";
 import type { startBrowserControlServerIfEnabled } from "./server-browser.js";
 import { createChannelManager } from "./server-channels.js";
-import { createAgentEventHandler } from "./server-chat.js";
+import { createAiEventHandler } from "./server-chat.js";
 import { createGatewayCloseHandler } from "./server-close.js";
 import { buildGatewayCronService } from "./server-cron.js";
 import { startGatewayDiscovery } from "./server-discovery-runtime.js";
@@ -477,15 +477,15 @@ export async function startGatewayServer(
 
   const agentUnsub = minimalTestGateway
     ? null
-    : onAgentEvent(
-        createAgentEventHandler({
+    : onAiEvent(
+        createAiEventHandler({
           broadcast,
           broadcastToConnIds,
           nodeSendToSession,
           agentRunSeq,
           chatRunState,
           resolveSessionKeyForRun,
-          clearAgentRunContext,
+          clearAiRunContext,
           toolEventRecipients,
         }),
       );

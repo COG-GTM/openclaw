@@ -1,4 +1,4 @@
-import { onAgentEvent } from "../../infra/agent-events.js";
+import { onAiEvent } from "../../infra/ai-events.js";
 
 const AGENT_RUN_CACHE_TTL_MS = 10 * 60_000;
 /**
@@ -101,7 +101,7 @@ function ensureAgentRunListener() {
     return;
   }
   agentRunListenerStarted = true;
-  onAgentEvent((evt) => {
+  onAiEvent((evt) => {
     if (!evt) {
       return;
     }
@@ -201,7 +201,7 @@ export async function waitForAgentJob(params: {
       scheduleErrorFinish(pending.snapshot, pending.dueAt - Date.now());
     }
 
-    const unsubscribe = onAgentEvent((evt) => {
+    const unsubscribe = onAiEvent((evt) => {
       if (!evt || evt.stream !== "lifecycle") {
         return;
       }

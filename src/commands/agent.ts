@@ -45,11 +45,7 @@ import {
   type SessionEntry,
   updateSessionStore,
 } from "../config/sessions.js";
-import {
-  clearAgentRunContext,
-  emitAgentEvent,
-  registerAgentRunContext,
-} from "../infra/agent-events.js";
+import { clearAiRunContext, emitAiEvent, registerAiRunContext } from "../infra/ai-events.js";
 import { getRemoteSkillEligibility } from "../infra/skills-remote.js";
 import { normalizeAgentId } from "../routing/session-key.js";
 import { defaultRuntime, type RuntimeEnv } from "../runtime.js";
@@ -106,7 +102,7 @@ function runAgentAttempt(params: {
   skillsSnapshot: ReturnType<typeof buildWorkspaceSkillSnapshot> | undefined;
   resolvedVerboseLevel: VerboseLevel | undefined;
   agentDir: string;
-  onAgentEvent: (evt: { stream: string; data?: Record<string, unknown> }) => void;
+  onAiEvent: (evt: { stream: string; data?: Record<string, unknown> }) => void;
   primaryProvider: string;
 }) {
   const effectivePrompt = resolveFallbackRetryPrompt({
@@ -177,7 +173,7 @@ function runAgentAttempt(params: {
     inputProvenance: params.opts.inputProvenance,
     streamParams: params.opts.streamParams,
     agentDir: params.agentDir,
-    onAgentEvent: params.onAgentEvent,
+    onAiEvent: params.onAiEvent,
   });
 }
 
@@ -306,7 +302,7 @@ export async function agentCommand(
       verboseOverride ?? persistedVerbose ?? (agentCfg?.verboseDefault as VerboseLevel | undefined);
 
     if (sessionKey) {
-      registerAgentRunContext(runId, {
+      registerAiRunContext(runId, {
         sessionKey,
         verboseLevel: resolvedVerboseLevel,
       });
@@ -565,7 +561,7 @@ export async function agentCommand(
             resolvedVerboseLevel,
             agentDir,
             primaryProvider: provider,
-            onAgentEvent: (evt) => {
+            onAiEvent: (evt) => {
               // Track lifecycle end for fallback emission below.
               if (
                 evt.stream === "lifecycle" &&
@@ -582,7 +578,7 @@ export async function agentCommand(
       fallbackProvider = fallbackResult.provider;
       fallbackModel = fallbackResult.model;
       if (!lifecycleEnded) {
-        emitAgentEvent({
+        emitAiEvent({
           runId,
           stream: "lifecycle",
           data: {
@@ -595,7 +591,7 @@ export async function agentCommand(
       }
     } catch (err) {
       if (!lifecycleEnded) {
-        emitAgentEvent({
+        emitAiEvent({
           runId,
           stream: "lifecycle",
           data: {
@@ -637,6 +633,6 @@ export async function agentCommand(
       payloads,
     });
   } finally {
-    clearAgentRunContext(runId);
+    clearAiRunContext(runId);
   }
 }

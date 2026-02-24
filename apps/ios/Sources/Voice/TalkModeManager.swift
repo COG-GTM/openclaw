@@ -1259,8 +1259,8 @@ final class TalkModeManager: NSObject {
         let stream = await gateway.subscribeServerEvents(bufferingNewest: 200)
         for await evt in stream {
             if Task.isCancelled { return }
-            guard evt.event == "agent", let payload = evt.payload else { continue }
-            guard let agentEvent = try? GatewayPayloadDecoding.decode(payload, as: OpenClawAgentEventPayload.self) else {
+            guard evt.event == "ai", let payload = evt.payload else { continue }
+            guard let agentEvent = try? GatewayPayloadDecoding.decode(payload, as: OpenClawAiEventPayload.self) else {
                 continue
             }
             guard agentEvent.runId == runId, agentEvent.stream == "assistant" else { continue }

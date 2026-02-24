@@ -4,7 +4,7 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { emitAgentEvent } from "../../infra/agent-events.js";
+import { emitAiEvent } from "../../infra/ai-events.js";
 import { formatZonedTimestamp } from "../../infra/format-time/format-datetime.js";
 import { resetLogger, setLoggerOverride } from "../../logging.js";
 import { ExecApprovalManager } from "../exec-approval-manager.js";
@@ -40,8 +40,8 @@ describe("waitForAgentJob", () => {
     const runId = `run-timeout-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const waitPromise = waitForAgentJob({ runId, timeoutMs: 1_000 });
 
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 100 } });
-    emitAgentEvent({
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 100 } });
+    emitAiEvent({
       runId,
       stream: "lifecycle",
       data: { phase: "end", endedAt: 200, aborted: true },
@@ -58,8 +58,8 @@ describe("waitForAgentJob", () => {
     const runId = `run-ok-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const waitPromise = waitForAgentJob({ runId, timeoutMs: 1_000 });
 
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 300 } });
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "end", endedAt: 400 } });
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 300 } });
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "end", endedAt: 400 } });
 
     const snapshot = await waitPromise;
     expect(snapshot).not.toBeNull();
@@ -72,16 +72,16 @@ describe("waitForAgentJob", () => {
     const runId = `run-recover-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const waitPromise = waitForAgentJob({ runId, timeoutMs: 60_000 });
 
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 100 } });
-    emitAgentEvent({
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 100 } });
+    emitAiEvent({
       runId,
       stream: "lifecycle",
       data: { phase: "error", endedAt: 110, error: "transient" },
     });
 
     await vi.advanceTimersByTimeAsync(1_000);
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 200 } });
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "end", endedAt: 260 } });
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 200 } });
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "end", endedAt: 260 } });
 
     const snapshot = await waitPromise;
     expect(snapshot).not.toBeNull();
@@ -94,8 +94,8 @@ describe("waitForAgentJob", () => {
     const runId = `run-error-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     const waitPromise = waitForAgentJob({ runId, timeoutMs: 60_000 });
 
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 10 } });
-    emitAgentEvent({
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 10 } });
+    emitAiEvent({
       runId,
       stream: "lifecycle",
       data: { phase: "error", endedAt: 20, error: "fatal" },
@@ -121,8 +121,8 @@ describe("waitForAgentJob", () => {
   it("honors pending error grace when waiter attaches after the error event", async () => {
     const runId = `run-late-wait-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-    emitAgentEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 900 } });
-    emitAgentEvent({
+    emitAiEvent({ runId, stream: "lifecycle", data: { phase: "start", startedAt: 900 } });
+    emitAiEvent({
       runId,
       stream: "lifecycle",
       data: { phase: "error", endedAt: 999, error: "late-listener" },

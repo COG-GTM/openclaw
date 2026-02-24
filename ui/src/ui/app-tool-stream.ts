@@ -4,7 +4,7 @@ const TOOL_STREAM_LIMIT = 50;
 const TOOL_STREAM_THROTTLE_MS = 80;
 const TOOL_OUTPUT_CHAR_LIMIT = 120_000;
 
-export type AgentEventPayload = {
+export type AiEventPayload = {
   runId: string;
   seq: number;
   stream: string;
@@ -174,7 +174,7 @@ type CompactionHost = ToolStreamHost & {
 
 const COMPACTION_TOAST_DURATION_MS = 5000;
 
-export function handleCompactionEvent(host: CompactionHost, payload: AgentEventPayload) {
+export function handleCompactionEvent(host: CompactionHost, payload: AiEventPayload) {
   const data = payload.data ?? {};
   const phase = typeof data.phase === "string" ? data.phase : "";
 
@@ -204,7 +204,7 @@ export function handleCompactionEvent(host: CompactionHost, payload: AgentEventP
   }
 }
 
-export function handleAgentEvent(host: ToolStreamHost, payload?: AgentEventPayload) {
+export function handleAiEvent(host: ToolStreamHost, payload?: AiEventPayload) {
   if (!payload) {
     return;
   }

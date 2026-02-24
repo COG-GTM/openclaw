@@ -21,7 +21,7 @@ import {
   updateSessionStore,
 } from "../../config/sessions.js";
 import { logVerbose } from "../../globals.js";
-import { emitAgentEvent, registerAgentRunContext } from "../../infra/agent-events.js";
+import { emitAiEvent, registerAiRunContext } from "../../infra/ai-events.js";
 import { defaultRuntime } from "../../runtime.js";
 import {
   isMarkdownCapableMessageChannel,
@@ -93,7 +93,7 @@ export async function runAgentTurnWithFallback(params: {
   const runId = params.opts?.runId ?? crypto.randomUUID();
   params.opts?.onAgentRunStart?.(runId);
   if (params.sessionKey) {
-    registerAgentRunContext(runId, {
+    registerAiRunContext(runId, {
       sessionKey: params.sessionKey,
       verboseLevel: params.resolvedVerboseLevel,
       isHeartbeat: params.isHeartbeat,
@@ -176,7 +176,7 @@ export async function runAgentTurnWithFallback(params: {
 
           if (isCliProvider(provider, params.followupRun.run.config)) {
             const startedAt = Date.now();
-            emitAgentEvent({
+            emitAiEvent({
               runId,
               stream: "lifecycle",
               data: {
@@ -212,14 +212,14 @@ export async function runAgentTurnWithFallback(params: {
                 // and send the response to TUI/WebSocket clients.
                 const cliText = result.payloads?.[0]?.text?.trim();
                 if (cliText) {
-                  emitAgentEvent({
+                  emitAiEvent({
                     runId,
                     stream: "assistant",
                     data: { text: cliText },
                   });
                 }
 
-                emitAgentEvent({
+                emitAiEvent({
                   runId,
                   stream: "lifecycle",
                   data: {
@@ -232,7 +232,7 @@ export async function runAgentTurnWithFallback(params: {
 
                 return result;
               } catch (err) {
-                emitAgentEvent({
+                emitAiEvent({
                   runId,
                   stream: "lifecycle",
                   data: {
@@ -248,7 +248,7 @@ export async function runAgentTurnWithFallback(params: {
                 // Defensive backstop: never let a CLI run complete without a terminal
                 // lifecycle event, otherwise downstream consumers can hang.
                 if (!lifecycleTerminalEmitted) {
-                  emitAgentEvent({
+                  emitAiEvent({
                     runId,
                     stream: "lifecycle",
                     data: {
@@ -337,7 +337,7 @@ export async function runAgentTurnWithFallback(params: {
                   }
                 : undefined,
             onReasoningEnd: params.opts?.onReasoningEnd,
-            onAgentEvent: async (evt) => {
+            onAiEvent: async (evt) => {
               // Trigger typing when tools start executing.
               // Must await to ensure typing indicator starts before tool summaries are emitted.
               if (evt.stream === "tool") {

@@ -1,5 +1,5 @@
 import type { AgentEvent } from "@mariozechner/pi-agent-core";
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import { getGlobalHookRunner } from "../plugins/hook-runner-global.js";
 import type { EmbeddedPiSubscribeContext } from "./pi-embedded-subscribe.handlers.types.js";
 
@@ -8,12 +8,12 @@ export function handleAutoCompactionStart(ctx: EmbeddedPiSubscribeContext) {
   ctx.incrementCompactionCount();
   ctx.ensureCompactionPromise();
   ctx.log.debug(`embedded run compaction start: runId=${ctx.params.runId}`);
-  emitAgentEvent({
+  emitAiEvent({
     runId: ctx.params.runId,
     stream: "compaction",
     data: { phase: "start" },
   });
-  void ctx.params.onAgentEvent?.({
+  void ctx.params.onAiEvent?.({
     stream: "compaction",
     data: { phase: "start" },
   });
@@ -47,12 +47,12 @@ export function handleAutoCompactionEnd(
   } else {
     ctx.maybeResolveCompactionWait();
   }
-  emitAgentEvent({
+  emitAiEvent({
     runId: ctx.params.runId,
     stream: "compaction",
     data: { phase: "end", willRetry },
   });
-  void ctx.params.onAgentEvent?.({
+  void ctx.params.onAiEvent?.({
     stream: "compaction",
     data: { phase: "end", willRetry },
   });

@@ -24,7 +24,7 @@ function createTestContext(): {
     params: {
       runId: "run-test",
       onBlockReplyFlush,
-      onAgentEvent: undefined,
+      onAiEvent: undefined,
       onToolResult: undefined,
     },
     flushBlockReplyBuffer: vi.fn(),

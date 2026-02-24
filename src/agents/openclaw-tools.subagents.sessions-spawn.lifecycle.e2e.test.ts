@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import "./test-helpers/fast-core-tools.js";
 import { sleep } from "../utils.js";
 import {
@@ -173,7 +173,7 @@ describe("openclaw-tools: subagents (sessions_spawn lifecycle)", () => {
     if (!child.runId) {
       throw new Error("missing child runId");
     }
-    emitAgentEvent({
+    emitAiEvent({
       runId: child.runId,
       stream: "lifecycle",
       data: {
@@ -250,7 +250,7 @@ describe("openclaw-tools: subagents (sessions_spawn lifecycle)", () => {
     }
     vi.useFakeTimers();
     try {
-      emitAgentEvent({
+      emitAiEvent({
         runId: child.runId,
         stream: "lifecycle",
         data: {
@@ -495,7 +495,7 @@ describe("openclaw-tools: subagents (sessions_spawn lifecycle)", () => {
     }
     vi.useFakeTimers();
     try {
-      emitAgentEvent({
+      emitAiEvent({
         runId: childRunId,
         stream: "lifecycle",
         data: {

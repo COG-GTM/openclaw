@@ -118,8 +118,8 @@ vi.mock("../../routing/session-key.js", async (importOriginal) => {
   };
 });
 
-vi.mock("../../infra/agent-events.js", () => ({
-  registerAgentRunContext: vi.fn(),
+vi.mock("../../infra/ai-events.js", () => ({
+  registerAiRunContext: vi.fn(),
 }));
 
 vi.mock("../../infra/outbound/deliver.js", () => ({

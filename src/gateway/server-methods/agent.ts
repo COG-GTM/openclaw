@@ -10,7 +10,7 @@ import {
   type SessionEntry,
   updateSessionStore,
 } from "../../config/sessions.js";
-import { registerAgentRunContext } from "../../infra/agent-events.js";
+import { registerAiRunContext } from "../../infra/ai-events.js";
 import {
   resolveAgentDeliveryPlan,
   resolveAgentOutboundTarget,
@@ -449,7 +449,7 @@ export const agentHandlers: GatewayRequestHandlers = {
         });
         bestEffortDeliver = true;
       }
-      registerAgentRunContext(idem, { sessionKey: canonicalSessionKey });
+      registerAiRunContext(idem, { sessionKey: canonicalSessionKey });
     }
 
     const runId = idem;

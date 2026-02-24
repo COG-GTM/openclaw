@@ -20,8 +20,8 @@ vi.mock("../gateway/call.js", () => ({
   })),
 }));
 
-vi.mock("../infra/agent-events.js", () => ({
-  onAgentEvent: vi.fn(() => noop),
+vi.mock("../infra/ai-events.js", () => ({
+  onAiEvent: vi.fn(() => noop),
 }));
 
 const announceSpy = vi.fn(async () => true);

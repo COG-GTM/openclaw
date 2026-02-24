@@ -1,4 +1,4 @@
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import { createInlineCodeState } from "../markdown/code-spans.js";
 import { formatAssistantErrorText } from "./pi-embedded-helpers.js";
 import type { EmbeddedPiSubscribeContext } from "./pi-embedded-subscribe.handlers.types.js";
@@ -9,9 +9,9 @@ export {
   handleAutoCompactionStart,
 } from "./pi-embedded-subscribe.handlers.compaction.js";
 
-export function handleAgentStart(ctx: EmbeddedPiSubscribeContext) {
+export function handleAiStart(ctx: EmbeddedPiSubscribeContext) {
   ctx.log.debug(`embedded run agent start: runId=${ctx.params.runId}`);
-  emitAgentEvent({
+  emitAiEvent({
     runId: ctx.params.runId,
     stream: "lifecycle",
     data: {
@@ -19,13 +19,13 @@ export function handleAgentStart(ctx: EmbeddedPiSubscribeContext) {
       startedAt: Date.now(),
     },
   });
-  void ctx.params.onAgentEvent?.({
+  void ctx.params.onAiEvent?.({
     stream: "lifecycle",
     data: { phase: "start" },
   });
 }
 
-export function handleAgentEnd(ctx: EmbeddedPiSubscribeContext) {
+export function handleAiEnd(ctx: EmbeddedPiSubscribeContext) {
   const lastAssistant = ctx.state.lastAssistant;
   const isError = isAssistantMessage(lastAssistant) && lastAssistant.stopReason === "error";
 
@@ -36,7 +36,7 @@ export function handleAgentEnd(ctx: EmbeddedPiSubscribeContext) {
       cfg: ctx.params.config,
       sessionKey: ctx.params.sessionKey,
     });
-    emitAgentEvent({
+    emitAiEvent({
       runId: ctx.params.runId,
       stream: "lifecycle",
       data: {
@@ -45,7 +45,7 @@ export function handleAgentEnd(ctx: EmbeddedPiSubscribeContext) {
         endedAt: Date.now(),
       },
     });
-    void ctx.params.onAgentEvent?.({
+    void ctx.params.onAiEvent?.({
       stream: "lifecycle",
       data: {
         phase: "error",
@@ -53,7 +53,7 @@ export function handleAgentEnd(ctx: EmbeddedPiSubscribeContext) {
       },
     });
   } else {
-    emitAgentEvent({
+    emitAiEvent({
       runId: ctx.params.runId,
       stream: "lifecycle",
       data: {
@@ -61,7 +61,7 @@ export function handleAgentEnd(ctx: EmbeddedPiSubscribeContext) {
         endedAt: Date.now(),
       },
     });
-    void ctx.params.onAgentEvent?.({
+    void ctx.params.onAiEvent?.({
       stream: "lifecycle",
       data: { phase: "end" },
     });

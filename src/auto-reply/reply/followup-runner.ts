@@ -7,7 +7,7 @@ import { runEmbeddedPiAgent } from "../../agents/pi-embedded.js";
 import { resolveAgentIdFromSessionKey, type SessionEntry } from "../../config/sessions.js";
 import type { TypingMode } from "../../config/types.js";
 import { logVerbose } from "../../globals.js";
-import { registerAgentRunContext } from "../../infra/agent-events.js";
+import { registerAiRunContext } from "../../infra/ai-events.js";
 import { defaultRuntime } from "../../runtime.js";
 import { stripHeartbeatToken } from "../heartbeat.js";
 import type { OriginatingChannelType } from "../templating.js";
@@ -116,7 +116,7 @@ export function createFollowupRunner(params: {
     try {
       const runId = crypto.randomUUID();
       if (queued.run.sessionKey) {
-        registerAgentRunContext(runId, {
+        registerAiRunContext(runId, {
           sessionKey: queued.run.sessionKey,
           verboseLevel: queued.run.verboseLevel,
         });
@@ -172,7 +172,7 @@ export function createFollowupRunner(params: {
               timeoutMs: queued.run.timeoutMs,
               runId,
               blockReplyBreak: queued.run.blockReplyBreak,
-              onAgentEvent: (evt) => {
+              onAiEvent: (evt) => {
                 if (evt.stream !== "compaction") {
                   return;
                 }

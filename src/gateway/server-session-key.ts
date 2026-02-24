@@ -1,10 +1,10 @@
 import { loadConfig } from "../config/config.js";
 import { loadSessionStore, resolveStorePath } from "../config/sessions.js";
-import { getAgentRunContext, registerAgentRunContext } from "../infra/agent-events.js";
+import { getAiRunContext, registerAiRunContext } from "../infra/ai-events.js";
 import { toAgentRequestSessionKey } from "../routing/session-key.js";
 
 export function resolveSessionKeyForRun(runId: string) {
-  const cached = getAgentRunContext(runId)?.sessionKey;
+  const cached = getAiRunContext(runId)?.sessionKey;
   if (cached) {
     return cached;
   }
@@ -15,7 +15,7 @@ export function resolveSessionKeyForRun(runId: string) {
   const storeKey = found?.[0];
   if (storeKey) {
     const sessionKey = toAgentRequestSessionKey(storeKey) ?? storeKey;
-    registerAgentRunContext(runId, { sessionKey });
+    registerAiRunContext(runId, { sessionKey });
     return sessionKey;
   }
   return undefined;

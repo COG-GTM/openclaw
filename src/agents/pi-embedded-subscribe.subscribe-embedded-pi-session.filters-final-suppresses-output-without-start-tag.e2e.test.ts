@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createStubSessionHarness,
   emitMessageStartAndEndForAssistantText,
-  expectSingleAgentEventText,
+  expectSingleAiEventText,
 } from "./pi-embedded-subscribe.e2e-harness.js";
 import { subscribeEmbeddedPiSession } from "./pi-embedded-subscribe.js";
 
@@ -12,14 +12,14 @@ describe("subscribeEmbeddedPiSession", () => {
     const { session, emit } = createStubSessionHarness();
 
     const onPartialReply = vi.fn();
-    const onAgentEvent = vi.fn();
+    const onAiEvent = vi.fn();
 
     subscribeEmbeddedPiSession({
       session,
       runId: "run",
       enforceFinalTag: true,
       onPartialReply,
-      onAgentEvent,
+      onAiEvent,
     });
 
     emit({ type: "message_start", message: { role: "assistant" } });
@@ -53,16 +53,16 @@ describe("subscribeEmbeddedPiSession", () => {
   it("emits agent events on message_end even without <final> tags", () => {
     const { session, emit } = createStubSessionHarness();
 
-    const onAgentEvent = vi.fn();
+    const onAiEvent = vi.fn();
 
     subscribeEmbeddedPiSession({
       session,
       runId: "run",
       enforceFinalTag: true,
-      onAgentEvent,
+      onAiEvent,
     });
     emitMessageStartAndEndForAssistantText({ emit, text: "Hello world" });
-    expectSingleAgentEventText(onAgentEvent.mock.calls, "Hello world");
+    expectSingleAiEventText(onAiEvent.mock.calls, "Hello world");
   });
   it("does not require <final> when enforcement is off", () => {
     const { session, emit } = createStubSessionHarness();

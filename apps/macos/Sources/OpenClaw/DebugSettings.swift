@@ -483,7 +483,7 @@ struct DebugSettings: View {
                     .buttonStyle(.bordered)
 
                     Button("Open Agent Events") {
-                        DebugActions.openAgentEventsWindow()
+                        DebugActions.openAiEventsWindow()
                     }
                     .buttonStyle(.borderedProminent)
 

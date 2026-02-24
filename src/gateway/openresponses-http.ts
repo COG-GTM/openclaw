@@ -13,7 +13,7 @@ import { createDefaultDeps } from "../cli/deps.js";
 import { agentCommand } from "../commands/agent.js";
 import type { ImageContent } from "../commands/agent/types.js";
 import type { GatewayHttpResponsesConfig } from "../config/types.gateway.js";
-import { emitAgentEvent, onAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent, onAiEvent } from "../infra/ai-events.js";
 import { logWarn } from "../logger.js";
 import {
   DEFAULT_INPUT_IMAGE_MAX_BYTES,
@@ -705,7 +705,7 @@ export async function handleOpenResponsesHttpRequest(
     part: { type: "output_text", text: "" },
   });
 
-  unsubscribe = onAgentEvent((evt) => {
+  unsubscribe = onAiEvent((evt) => {
     if (evt.runId !== responseId) {
       return;
     }
@@ -886,7 +886,7 @@ export async function handleOpenResponsesHttpRequest(
       });
 
       writeSseEvent(res, { type: "response.failed", response: errorResponse });
-      emitAgentEvent({
+      emitAiEvent({
         runId: responseId,
         stream: "lifecycle",
         data: { phase: "error" },
@@ -894,7 +894,7 @@ export async function handleOpenResponsesHttpRequest(
     } finally {
       if (!closed) {
         // Emit lifecycle end to trigger completion
-        emitAgentEvent({
+        emitAiEvent({
           runId: responseId,
           stream: "lifecycle",
           data: { phase: "end" },

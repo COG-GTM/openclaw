@@ -15,8 +15,8 @@ vi.mock("../plugins/hook-runner-global.js", () => ({
   getGlobalHookRunner: () => hookMocks.runner,
 }));
 
-vi.mock("../infra/agent-events.js", () => ({
-  emitAgentEvent: vi.fn(),
+vi.mock("../infra/ai-events.js", () => ({
+  emitAiEvent: vi.fn(),
 }));
 
 describe("compaction hook wiring", () => {

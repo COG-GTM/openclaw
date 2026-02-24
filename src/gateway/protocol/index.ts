@@ -1,8 +1,8 @@
 import AjvPkg, { type ErrorObject } from "ajv";
 import type { SessionsPatchResult } from "../session-utils.types.js";
 import {
-  type AgentEvent,
-  AgentEventSchema,
+  type AiEvent,
+  AiEventSchema,
   type AgentIdentityParams,
   AgentIdentityParamsSchema,
   type AgentIdentityResult,
@@ -432,7 +432,7 @@ export {
   SnapshotSchema,
   ErrorShapeSchema,
   StateVersionSchema,
-  AgentEventSchema,
+  AiEventSchema,
   ChatEventSchema,
   MeshPlanParamsSchema,
   MeshPlanAutoParamsSchema,
@@ -534,7 +534,7 @@ export type {
   Snapshot,
   ErrorShape,
   StateVersion,
-  AgentEvent,
+  AiEvent,
   AgentIdentityParams,
   AgentIdentityResult,
   AgentWaitParams,

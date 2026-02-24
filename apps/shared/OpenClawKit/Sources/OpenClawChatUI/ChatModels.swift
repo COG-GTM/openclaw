@@ -269,7 +269,7 @@ public struct OpenClawChatEventPayload: Codable, Sendable {
     public let errorMessage: String?
 }
 
-public struct OpenClawAgentEventPayload: Codable, Sendable, Identifiable {
+public struct OpenClawAiEventPayload: Codable, Sendable, Identifiable {
     public var id: String { "\(self.runId)-\(self.seq ?? -1)" }
     public let runId: String
     public let seq: Int?

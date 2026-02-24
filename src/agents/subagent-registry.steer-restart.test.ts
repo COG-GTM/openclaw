@@ -15,8 +15,8 @@ vi.mock("../gateway/call.js", () => ({
   }),
 }));
 
-vi.mock("../infra/agent-events.js", () => ({
-  onAgentEvent: vi.fn((handler: typeof lifecycleHandler) => {
+vi.mock("../infra/ai-events.js", () => ({
+  onAiEvent: vi.fn((handler: typeof lifecycleHandler) => {
     lifecycleHandler = handler;
     return noop;
   }),

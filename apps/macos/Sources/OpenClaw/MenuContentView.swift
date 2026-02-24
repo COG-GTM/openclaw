@@ -283,7 +283,7 @@ struct MenuContent: View {
                 }
                 Divider()
                 Button {
-                    DebugActions.openAgentEventsWindow()
+                    DebugActions.openAiEventsWindow()
                 } label: {
                     Label("Open Agent Events…", systemImage: "bolt.horizontal.circle")
                 }

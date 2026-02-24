@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
   loadSessionEntry: vi.fn(),
   updateSessionStore: vi.fn(),
   agentCommand: vi.fn(),
-  registerAgentRunContext: vi.fn(),
+  registerAiRunContext: vi.fn(),
   sessionsResetHandler: vi.fn(),
   loadConfigReturn: {} as Record<string, unknown>,
 }));
@@ -51,9 +51,9 @@ vi.mock("../../agents/agent-scope.js", () => ({
   listAgentIds: () => ["main"],
 }));
 
-vi.mock("../../infra/agent-events.js", () => ({
-  registerAgentRunContext: mocks.registerAgentRunContext,
-  onAgentEvent: vi.fn(),
+vi.mock("../../infra/ai-events.js", () => ({
+  registerAiRunContext: mocks.registerAiRunContext,
+  onAiEvent: vi.fn(),
 }));
 
 vi.mock("./sessions.js", () => ({

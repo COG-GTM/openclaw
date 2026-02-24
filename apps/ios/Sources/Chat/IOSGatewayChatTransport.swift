@@ -115,13 +115,13 @@ struct IOSGatewayChatTransport: OpenClawChatTransport, Sendable {
                         {
                             continuation.yield(.chat(chatPayload))
                         }
-                    case "agent":
+                    case "ai":
                         guard let payload = evt.payload else { break }
                         if let agentPayload = try? GatewayPayloadDecoding.decode(
                             payload,
-                            as: OpenClawAgentEventPayload.self)
+                            as: OpenClawAiEventPayload.self)
                         {
-                            continuation.yield(.agent(agentPayload))
+                            continuation.yield(.ai(agentPayload))
                         }
                     default:
                         break

@@ -5,7 +5,7 @@ import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { SessionEntry } from "../../config/sessions.js";
 import { loadSessionStore, saveSessionStore } from "../../config/sessions.js";
-import { onAgentEvent } from "../../infra/agent-events.js";
+import { onAiEvent } from "../../infra/ai-events.js";
 import type { TemplateContext } from "../templating.js";
 import type { FollowupRun, QueueSettings } from "./queue.js";
 import { createMockTypingController } from "./test-helpers.js";
@@ -197,10 +197,7 @@ describe("runReplyAgent auto-compaction token update", () => {
   type EmbeddedRunParams = {
     prompt?: string;
     extraSystemPrompt?: string;
-    onAgentEvent?: (evt: {
-      stream?: string;
-      data?: { phase?: string; willRetry?: boolean };
-    }) => void;
+    onAiEvent?: (evt: { stream?: string; data?: { phase?: string; willRetry?: boolean } }) => void;
   };
 
   async function seedSessionStore(params: {
@@ -271,8 +268,8 @@ describe("runReplyAgent auto-compaction token update", () => {
 
     runEmbeddedPiAgentMock.mockImplementation(async (params: EmbeddedRunParams) => {
       // Simulate auto-compaction during agent run
-      params.onAgentEvent?.({ stream: "compaction", data: { phase: "start" } });
-      params.onAgentEvent?.({ stream: "compaction", data: { phase: "end", willRetry: false } });
+      params.onAiEvent?.({ stream: "compaction", data: { phase: "start" } });
+      params.onAiEvent?.({ stream: "compaction", data: { phase: "end", willRetry: false } });
       return {
         payloads: [{ text: "done" }],
         meta: {
@@ -645,7 +642,7 @@ describe("runReplyAgent claude-cli routing", () => {
     const runId = "00000000-0000-0000-0000-000000000001";
     const randomSpy = vi.spyOn(crypto, "randomUUID").mockReturnValue(runId);
     const lifecyclePhases: string[] = [];
-    const unsubscribe = onAgentEvent((evt) => {
+    const unsubscribe = onAiEvent((evt) => {
       if (evt.runId !== runId) {
         return;
       }

@@ -664,7 +664,7 @@ export async function runTui(opts: TuiOptions) {
     abortActive,
   } = sessionActions;
 
-  const { handleChatEvent, handleAgentEvent } = createEventHandlers({
+  const { handleChatEvent, handleAiEvent } = createEventHandlers({
     chatLog,
     tui,
     state,
@@ -765,8 +765,8 @@ export async function runTui(opts: TuiOptions) {
     if (evt.event === "chat") {
       handleChatEvent(evt.payload);
     }
-    if (evt.event === "agent") {
-      handleAgentEvent(evt.payload);
+    if (evt.event === "ai") {
+      handleAiEvent(evt.payload);
     }
   };
 

@@ -3,8 +3,8 @@ import { describe, expect, it, vi } from "vitest";
 import {
   createStubSessionHarness,
   emitMessageStartAndEndForAssistantText,
-  expectSingleAgentEventText,
-  extractAgentEventPayloads,
+  expectSingleAiEventText,
+  extractAiEventPayloads,
 } from "./pi-embedded-subscribe.e2e-harness.js";
 import { subscribeEmbeddedPiSession } from "./pi-embedded-subscribe.js";
 
@@ -22,16 +22,16 @@ describe("subscribeEmbeddedPiSession", () => {
 
   function createAgentEventHarness(options?: { runId?: string; sessionKey?: string }) {
     const { session, emit } = createStubSessionHarness();
-    const onAgentEvent = vi.fn();
+    const onAiEvent = vi.fn();
 
     subscribeEmbeddedPiSession({
       session,
       runId: options?.runId ?? "run",
-      onAgentEvent,
+      onAiEvent,
       sessionKey: options?.sessionKey,
     });
 
-    return { emit, onAgentEvent };
+    return { emit, onAiEvent };
   }
 
   function createToolErrorHarness(runId: string) {
@@ -202,7 +202,7 @@ describe("subscribeEmbeddedPiSession", () => {
   );
 
   it("emits delta chunks in agent events for streaming assistant text", () => {
-    const { emit, onAgentEvent } = createAgentEventHarness();
+    const { emit, onAiEvent } = createAgentEventHarness();
 
     emit({ type: "message_start", message: { role: "assistant" } });
     emit({
@@ -216,7 +216,7 @@ describe("subscribeEmbeddedPiSession", () => {
       assistantMessageEvent: { type: "text_delta", delta: " world" },
     });
 
-    const payloads = extractAgentEventPayloads(onAgentEvent.mock.calls);
+    const payloads = extractAiEventPayloads(onAiEvent.mock.calls);
     expect(payloads[0]?.text).toBe("Hello");
     expect(payloads[0]?.delta).toBe("Hello");
     expect(payloads[1]?.text).toBe("Hello world");
@@ -226,19 +226,19 @@ describe("subscribeEmbeddedPiSession", () => {
   it("emits agent events on message_end for non-streaming assistant text", () => {
     const { session, emit } = createStubSessionHarness();
 
-    const onAgentEvent = vi.fn();
+    const onAiEvent = vi.fn();
 
     subscribeEmbeddedPiSession({
       session,
       runId: "run",
-      onAgentEvent,
+      onAiEvent,
     });
     emitMessageStartAndEndForAssistantText({ emit, text: "Hello world" });
-    expectSingleAgentEventText(onAgentEvent.mock.calls, "Hello world");
+    expectSingleAiEventText(onAiEvent.mock.calls, "Hello world");
   });
 
   it("does not emit duplicate agent events when message_end repeats", () => {
-    const { emit, onAgentEvent } = createAgentEventHarness();
+    const { emit, onAiEvent } = createAgentEventHarness();
 
     const assistantMessage = {
       role: "assistant",
@@ -249,12 +249,12 @@ describe("subscribeEmbeddedPiSession", () => {
     emit({ type: "message_end", message: assistantMessage });
     emit({ type: "message_end", message: assistantMessage });
 
-    const payloads = extractAgentEventPayloads(onAgentEvent.mock.calls);
+    const payloads = extractAiEventPayloads(onAiEvent.mock.calls);
     expect(payloads).toHaveLength(1);
   });
 
   it("skips agent events when cleaned text rewinds mid-stream", () => {
-    const { emit, onAgentEvent } = createAgentEventHarness();
+    const { emit, onAiEvent } = createAgentEventHarness();
 
     emit({ type: "message_start", message: { role: "assistant" } });
     emit({
@@ -268,13 +268,13 @@ describe("subscribeEmbeddedPiSession", () => {
       assistantMessageEvent: { type: "text_delta", delta: " https://example.com/a.png\nCaption" },
     });
 
-    const payloads = extractAgentEventPayloads(onAgentEvent.mock.calls);
+    const payloads = extractAiEventPayloads(onAiEvent.mock.calls);
     expect(payloads).toHaveLength(1);
     expect(payloads[0]?.text).toBe("MEDIA:");
   });
 
   it("emits agent events when media arrives without text", () => {
-    const { emit, onAgentEvent } = createAgentEventHarness();
+    const { emit, onAiEvent } = createAgentEventHarness();
 
     emit({ type: "message_start", message: { role: "assistant" } });
     emit({
@@ -283,7 +283,7 @@ describe("subscribeEmbeddedPiSession", () => {
       assistantMessageEvent: { type: "text_delta", delta: "MEDIA: https://example.com/a.png" },
     });
 
-    const payloads = extractAgentEventPayloads(onAgentEvent.mock.calls);
+    const payloads = extractAiEventPayloads(onAiEvent.mock.calls);
     expect(payloads).toHaveLength(1);
     expect(payloads[0]?.text).toBe("");
     expect(payloads[0]?.mediaUrls).toEqual(["https://example.com/a.png"]);
@@ -388,7 +388,7 @@ describe("subscribeEmbeddedPiSession", () => {
   });
 
   it("emits lifecycle:error event on agent_end when last assistant message was an error", async () => {
-    const { emit, onAgentEvent } = createAgentEventHarness({
+    const { emit, onAiEvent } = createAgentEventHarness({
       runId: "run-error",
       sessionKey: "test-session",
     });
@@ -406,7 +406,7 @@ describe("subscribeEmbeddedPiSession", () => {
     emit({ type: "agent_end" });
 
     // Look for lifecycle:error event
-    const lifecycleError = onAgentEvent.mock.calls.find(
+    const lifecycleError = onAiEvent.mock.calls.find(
       (call) => call[0]?.stream === "lifecycle" && call[0]?.data?.phase === "error",
     );
 

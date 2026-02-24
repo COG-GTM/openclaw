@@ -2,13 +2,13 @@ import OpenClawProtocol
 import SwiftUI
 
 @MainActor
-struct AgentEventsWindow: View {
-    private let store = AgentEventStore.shared
+struct AiEventsWindow: View {
+    private let store = AiEventStore.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack {
-                Text("Agent Events")
+                Text("AI Events")
                     .font(.title3.weight(.semibold))
                 Spacer()
                 Button("Clear") { self.store.clear() }
@@ -30,7 +30,7 @@ struct AgentEventsWindow: View {
 }
 
 private struct EventRow: View {
-    let event: ControlAgentEvent
+    let event: ControlAiEvent
 
     var body: some View {
         VStack(alignment: .leading, spacing: 2) {
@@ -91,9 +91,9 @@ private struct EventRow: View {
     }
 }
 
-struct AgentEventsWindow_Previews: PreviewProvider {
+struct AiEventsWindow_Previews: PreviewProvider {
     static var previews: some View {
-        let sample = ControlAgentEvent(
+        let sample = ControlAiEvent(
             runId: "abc",
             seq: 1,
             stream: "tool",
@@ -103,7 +103,7 @@ struct AgentEventsWindow_Previews: PreviewProvider {
                 "name": OpenClawProtocol.AnyCodable("bash"),
             ],
             summary: nil)
-        AgentEventStore.shared.append(sample)
-        return AgentEventsWindow()
+        AiEventStore.shared.append(sample)
+        return AiEventsWindow()
     }
 }

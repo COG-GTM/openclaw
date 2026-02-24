@@ -18,7 +18,7 @@ export type ChatEvent = {
   errorMessage?: string;
 };
 
-export type AgentEvent = {
+export type AiEvent = {
   runId: string;
   stream: string;
   data?: Record<string, unknown>;

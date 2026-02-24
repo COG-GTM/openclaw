@@ -85,7 +85,7 @@ export function createGatewayBroadcaster(params: { clients: Set<GatewayWsClient>
         presenceVersion: opts?.stateVersion?.presence,
         healthVersion: opts?.stateVersion?.health,
       };
-      if (event === "agent") {
+      if (event === "ai") {
         Object.assign(logMeta, summarizeAgentEventForWsLog(payload));
       }
       logWs("out", "event", logMeta);

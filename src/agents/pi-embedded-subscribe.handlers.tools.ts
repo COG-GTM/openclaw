@@ -1,5 +1,5 @@
 import type { AgentEvent } from "@mariozechner/pi-agent-core";
-import { emitAgentEvent } from "../infra/agent-events.js";
+import { emitAiEvent } from "../infra/ai-events.js";
 import { getGlobalHookRunner } from "../plugins/hook-runner-global.js";
 import type { PluginHookAfterToolCallEvent } from "../plugins/types.js";
 import { normalizeTextForComparison } from "./pi-embedded-helpers.js";
@@ -170,7 +170,7 @@ export async function handleToolExecutionStart(
   );
 
   const shouldEmitToolEvents = ctx.shouldEmitToolResult();
-  emitAgentEvent({
+  emitAiEvent({
     runId: ctx.params.runId,
     stream: "tool",
     data: {
@@ -181,7 +181,7 @@ export async function handleToolExecutionStart(
     },
   });
   // Best-effort typing signal; do not block tool summaries on slow emitters.
-  void ctx.params.onAgentEvent?.({
+  void ctx.params.onAiEvent?.({
     stream: "tool",
     data: { phase: "start", name: toolName, toolCallId },
   });
@@ -231,7 +231,7 @@ export function handleToolExecutionUpdate(
   const toolCallId = String(evt.toolCallId);
   const partial = evt.partialResult;
   const sanitized = sanitizeToolResult(partial);
-  emitAgentEvent({
+  emitAiEvent({
     runId: ctx.params.runId,
     stream: "tool",
     data: {
@@ -241,7 +241,7 @@ export function handleToolExecutionUpdate(
       partialResult: sanitized,
     },
   });
-  void ctx.params.onAgentEvent?.({
+  void ctx.params.onAiEvent?.({
     stream: "tool",
     data: {
       phase: "update",
@@ -343,7 +343,7 @@ export async function handleToolExecutionEnd(
     ctx.state.successfulCronAdds += 1;
   }
 
-  emitAgentEvent({
+  emitAiEvent({
     runId: ctx.params.runId,
     stream: "tool",
     data: {
@@ -355,7 +355,7 @@ export async function handleToolExecutionEnd(
       result: sanitizedResult,
     },
   });
-  void ctx.params.onAgentEvent?.({
+  void ctx.params.onAiEvent?.({
     stream: "tool",
     data: {
       phase: "result",
