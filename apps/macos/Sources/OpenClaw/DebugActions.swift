@@ -14,7 +14,7 @@ enum DebugActions {
             styleMask: [.titled, .closable, .miniaturizable, .resizable],
             backing: .buffered,
             defer: false)
-        window.title = "Agent Events"
+        window.title = "AI Events"
         window.isReleasedWhenClosed = false
         window.contentView = NSHostingView(rootView: AiEventsWindow())
         window.center()
