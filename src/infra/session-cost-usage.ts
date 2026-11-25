@@ -161,8 +161,22 @@ const parseTranscriptEntry = (entry: Record<string, unknown>): ParsedTranscriptE
   };
 };
 
-const formatDayKey = (date: Date): string =>
-  date.toLocaleDateString("en-CA", { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
+// Building an Intl.DateTimeFormat is far more expensive than formatting with one, and this runs
+// several times per transcript line. Reuse the formatter until process.env.TZ changes.
+let dayKeyFormatter: { tz: string | undefined; formatter: Intl.DateTimeFormat } | undefined;
+
+const formatDayKey = (date: Date): string => {
+  const tz = process.env.TZ;
+  if (!dayKeyFormatter || dayKeyFormatter.tz !== tz) {
+    dayKeyFormatter = {
+      tz,
+      formatter: new Intl.DateTimeFormat("en-CA", {
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      }),
+    };
+  }
+  return dayKeyFormatter.formatter.format(date);
+};
 
 const computeLatencyStats = (values: number[]): SessionLatencyStats | undefined => {
   if (!values.length) {

@@ -147,6 +147,45 @@ describe("session cost usage", () => {
     expect(summary?.lastActivity).toBeGreaterThan(0);
   });
 
+  it("buckets days in the current process timezone, following TZ changes", async () => {
+    const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-cost-tz-"));
+    const sessionFile = path.join(root, "session.jsonl");
+    await fs.writeFile(
+      sessionFile,
+      JSON.stringify({
+        type: "message",
+        timestamp: "2026-02-01T05:00:00.000Z",
+        message: {
+          role: "assistant",
+          provider: "openai",
+          model: "gpt-5.2",
+          usage: { input: 1, output: 1, totalTokens: 2, cost: { total: 0.001 } },
+        },
+      }),
+      "utf-8",
+    );
+
+    const originalTz = process.env.TZ;
+    const originalZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    try {
+      process.env.TZ = "America/Los_Angeles";
+      const west = await loadSessionCostSummary({ sessionFile });
+      expect(west?.dailyBreakdown?.map((day) => day.date)).toEqual(["2026-01-31"]);
+
+      process.env.TZ = "Asia/Tokyo";
+      const east = await loadSessionCostSummary({ sessionFile });
+      expect(east?.dailyBreakdown?.map((day) => day.date)).toEqual(["2026-02-01"]);
+    } finally {
+      if (originalTz === undefined) {
+        // Some platforms keep the last zone after TZ is deleted, so restore it explicitly first.
+        process.env.TZ = originalZone;
+        delete process.env.TZ;
+      } else {
+        process.env.TZ = originalTz;
+      }
+    }
+  });
+
   it("captures message counts, tool usage, and model usage", async () => {
     const root = await fs.mkdtemp(path.join(os.tmpdir(), "openclaw-cost-session-meta-"));
     const sessionFile = path.join(root, "session.jsonl");
