@@ -166,6 +166,7 @@ describe("session cost usage", () => {
     );
 
     const originalTz = process.env.TZ;
+    const originalZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     try {
       process.env.TZ = "America/Los_Angeles";
       const west = await loadSessionCostSummary({ sessionFile });
@@ -176,6 +177,8 @@ describe("session cost usage", () => {
       expect(east?.dailyBreakdown?.map((day) => day.date)).toEqual(["2026-02-01"]);
     } finally {
       if (originalTz === undefined) {
+        // Some platforms keep the last zone after TZ is deleted, so restore it explicitly first.
+        process.env.TZ = originalZone;
         delete process.env.TZ;
       } else {
         process.env.TZ = originalTz;
